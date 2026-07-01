@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Development of Atomic Theory</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(160deg, #06061a 0%, #0d0d30 60%, #060620 100%);
+    min-height: 100vh;
+    font-family: Georgia, serif;
+    color: #e0e0f0;
+    padding: 24px 16px 60px;
+  }
+  .header { text-align: center; margin-bottom: 36px; }
+  .header h1 {
+    font-size: 2em;
+    color: #ffd700;
+    letter-spacing: 3px;
+    text-shadow: 0 0 24px rgba(255,215,0,0.5);
+    margin-bottom: 8px;
+  }
+  .header p { font-size: 0.85em; color: #8080b0; letter-spacing: 1px; }
+
+  .timeline {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .spine {
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom,#9b59b6,#27ae60,#e67e22,#c0392b,#00bcd4,#e91e63,#2ecc71,#ff9800,#aa00ff);
+    transform: translateX(-50%);
+    border-radius: 2px;
+    box-shadow: 0 0 16px rgba(255,215,0,0.3);
+    z-index: 0;
+  }
+  .row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .row.left  { flex-direction: row; }
+  .row.right { flex-direction: row-reverse; }
+
+  .dot {
+    position: absolute;
+    left: 50%;
+    top: 32px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+  .card-wrap {
+    width: calc(50% - 30px);
+  }
+  .spacer { width: calc(50% - 30px); }
+
+  .card {
+    border-radius: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-bottom: 24px;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.1);
+  }
+  .card:hover { border-color: rgba(255,255,255,0.25); }
+  .card.open { background: var(--bg); border-color: var(--col); box-shadow: 0 0 24px var(--shadow); }
+
+  .row.left  .card { text-align: right; }
+  .row.right .card { text-align: left; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .row.left  .card-header { flex-direction: row-reverse; }
+  .row.right .card-header { flex-direction: row; }
+
+  .year-badge {
+    color: #000;
+    font-weight: bold;
+    font-size: 0.72em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .scientist { font-size: 1.05em; font-weight: bold; }
+  .model-label { font-size: 0.75em; color: #00d4ff; font-style: italic; margin-bottom: 6px; }
+
+  .svg-wrap {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 8px 0;
+  }
+  .row.left  .svg-wrap { justify-content: flex-end; }
+  .row.right .svg-wrap { justify-content: flex-start; }
+
+  .desc {
+    font-size: 0.8em;
+    color: #c8c8e0;
+    line-height: 1.6;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .card.open .desc { max-height: 300px; margin-bottom: 10px; }
+
+  .transition-box {
+    font-size: 0.73em;
+    color: #ffcc44;
+    background: rgba(255,200,0,0.07);
+    padding: 6px 10px;
+    font-style: italic;
+    line-height: 1.4;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease 0.1s;
+  }
+  .card.open .transition-box { max-height: 140px; margin-top: 6px; }
+  .row.left  .transition-box { border-right: 3px solid var(--col); border-radius: 8px 0 0 8px; }
+  .row.right .transition-box { border-left:  3px solid var(--col); border-radius: 0 8px 8px 0; }
+
+  .toggle-hint {
+    font-size: 0.7em;
+    color: #888;
+    margin-top: 8px;
+    font-style: italic;
+  }
+  .card.open .toggle-hint { color: var(--col); }
+
+  .legend {
+    max-width: 900px;
+    margin: 28px auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+    font-size: 0.75em;
+    color: #888;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚛ Development of Atomic Theory</h1>
+  <p>OxfordAQA International A-Level Chemistry · Specification 3.1.1 · Click any card to expand</p>
+</div>
+
+<div class="timeline">
+  <div class="spine"></div>
+
+  <!-- 1. Greek Philosophers -->
+  <div class="row left">
+    <div class="dot" style="background:#9b59b6;box-shadow:0 0 14px #9b59b6cc;"></div>
+    <div class="card-wrap">
+      <div class="card" style="--col:#9b59b6;--bg:rgba(155,89,182,0.12);--shadow:#9b59b644;" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="year-badge" style="background:linear-gradient(135deg,#9b59b6,#9b59b699);">~400 BC</span>
+          <span class="scientist" style="color:#9b59b6;">Greek Philosophers</span>
+        </div>
+        <div class="model-label">The Philosophical Atom · Democritus &amp; Leucippus</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 120 90" width="120" height="90">
+            <circle cx="60" cy="42" r="30" fill="none" stroke="#9b59b6" stroke-width="2" stroke-dasharray="6,4" opacity="0.7"/>
+            <circle cx="60" cy="42" r="8" fill="#9b59b6"/>
+            <text x="60" y="46" text-anchor="middle" font-size="7" fill="white" font-weight="bold">ATOM</text>
+            <text x="60" y="80" text-anchor="middle" font-size="8" fill="#c8c0e0">&#x1F300; &#x201C;uncuttable&#x201D;</text>
+            <text x="60" y="12" text-anchor="middle" font-size="7.5" fill="#9b59b6">earth · fire · water · air</text>
+          </svg>
+        </div>
+        <div class="desc">Democritus proposed all matter is made of tiny, indivisible particles called <em>atomos</em> (&#x1F300; &#x2014; &#x201C;uncuttable&#x201D;). Matter was thought to be built from four elements: earth, fire, water, and air. These ideas were purely philosophical &#x2014; no experimental evidence existed.</div>
+        <div class="transition-box">&#x1F4A1; These ideas persisted for ~2000 years until experimental chemistry began identifying real, distinct elements &#x2014; inspiring Boyle's work.</div>
+        <div class="toggle-hint">&#x25BC; click to expand</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 2. Robert Boyle -->
+  <div class="row right">
+    <div class="dot" style="background:#27ae60;box-shadow:0 0 14px #27ae60cc;"></div>
+    <div class="card-wrap">
+      <div class="card" style="--col:#27ae60;--bg:rgba(39,174,96,0.12);--shadow:#27ae6044;" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="year-badge" style="background:linear-gradient(135deg,#27ae60,#27ae6099);">1661</span>
+          <span class="scientist" style="color:#27ae60;">Robert Boyle</span>
+        </div>
+        <div class="model-label">Chemical Elements · The Sceptical Chymist</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 165 85" width="165" height="85">
+            <rect x="2" y="18" width="36" height="44" rx="5" fill="#e74c3c" opacity="0.85"/>
+            <text x="20" y="44" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Fe</text>
+            <rect x="43" y="18" width="36" height="44" rx="5" fill="#e67e22" opacity="0.85"/>
+            <text x="61" y="44" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Cu</text>
+            <rect x="84" y="18" width="36" height="44" rx="5" fill="#f1c40f" opacity="0.85"/>
+            <text x="102" y="44" text-anchor="middle" font-size="13" fill="#222" font-weight="bold">S</text>
+            <rect x="125" y="18" width="36" height="44" rx="5" fill="#27ae60" opacity="0.85"/>
+            <text x="143" y="44" text-anchor="middle" font-size="13" fill="white" font-weight="bold">Au</text>
+            <text x="82" y="76" text-anchor="middle" font-size="7.5" fill="#b0c8b0">substances that cannot be simplified further</text>
+          </svg>
+        </div>
+        <div class="desc">Boyle proposed that some substances cannot be broken down into simpler ones &#x2014; these are the true <strong>chemical elements</strong>. He rejected the Greek four-element model and established an empirical, experimental approach to chemistry.</div>
+        <div class="transition-box">&#x1F4A1; Boyle&#x2019;s concept of elements directly inspired Dalton to propose that each element is made of a unique type of indivisible atom.</div>
+        <div class="toggle-hint">&#x25BC; click to expand</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 3. John Dalton -->
+  <div class="row left">
+    <div class="dot" style="background:#e67e22;box-shadow:0 0 14px #e67e22cc;"></div>
+    <div class="card-wrap">
+      <div class="card" style="--col:#e67e22;--bg:rgba(230,126,34,0.12);--shadow:#e67e2244;" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="year-badge" style="background:linear-gradient(135deg,#e67e22,#e67e2299);">1803</span>
+          <span class="scientist" style="color:#e67e22;">John Dalton</span>
+        </div>
+        <div class="model-label">The Billiard Ball Model · Atomic Theory</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 150 85" width="150" height="85">
+            <circle cx="30" cy="38" r="22" fill="#e67e22" opacity="0.9"/>
+            <text x="30" y="43" text-anchor="middle" font-size="13" fill="white" font-weight="bold">H</text>
+            <circle cx="80" cy="38" r="26" fill="#2980b9" opacity="0.9"/>
+            <text x="80" y="43" text-anchor="middle" font-size="13" fill="white" font-weight="bold">O</text>
+            <circle cx="128" cy="38" r="18" fill="#27ae60" opacity="0.9"/>
+            <text x="128" y="43" text-anchor="middle" font-size="13" fill="white" font-weight="bold">N</text>
+            <text x="75" y="78" text-anchor="middle" font-size="7.5" fill="#e8d0b0">solid, indivisible spheres &#x2014; different elements, different sizes</text>
+          </svg>
+        </div>
+        <div class="desc">Each element is made of identical, indivisible <strong>solid spheres</strong>. Atoms of different elements have different masses. Compounds form when atoms combine in fixed whole-number ratios. Atoms cannot be created, destroyed, or subdivided.</div>
+        <div class="transition-box">&#x1F4A1; Becquerel&#x2019;s discovery of radioactivity (1896) showed particles could escape from inside atoms &#x2014; proving atoms are NOT indivisible as Dalton claimed.</div>
+        <div class="toggle-hint">&#x25BC; click to expand</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 4. Becquerel -->
+  <div class="row right">
+    <div class="dot" style="background:#c0392b;box-shadow:0 0 14px #c0392bcc;"></div>
+    <div class="card-wrap">
+      <div class="card" style="--col:#c0392b;--bg:rgba(192,57,43,0.12);--shadow:#c0392b44;" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="year-badge" style="background:linear-gradient(135deg,#c0392b,#c0392b99);">1896</span>
+          <span class="scientist" style="color:#c0392b;">Henri Becquerel</span>
+        </div>
+        <div class="model-label">Discovery of Radioactivity</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 155 90" width="155" height="90">
+            <defs>
+              <marker id="ra" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3z" fill="#ff4444"/>
+              </marker>
+            </defs>
+            <circle cx="45" cy="44" r="24" fill="#555" stroke="#c0392b" stroke-width="2"/>
+            <text x="45" y="49" text-anchor="middle" font-size="11" fill="white" font-weight="bold">U</text>
+            <line x1="70" y1="32" x2="120" y2="14" stroke="#ff4444" stroke-width="2" marker-end="url(#ra)"/>
+            <line x1="70" y1="44" x2="128" y2="44" stroke="#ff9900" stroke-width="2" marker-end="url(#ra)"/>
+            <line x1="70" y1="56" x2="120" y2="74" stroke="#ff4444" stroke-width="2" marker-end="url(#ra)"/>
+            <text x="128" y="12" font-size="9" fill="#ff4444">&#x03B1;</text>
+            <text x="132" y="47" font-size="9" fill="#ff9900">&#x03B2;</text>
+            <text x="128" y="76" font-size="9" fill="#ff4444">&#x03B3;</text>
+            <text x="78" y="84" text-anchor="middle" font-size="7.5" fill="#e0b0b0">radiation emitted from inside uranium</text>
+          </svg>
+        </div>
+        <div class="desc">Becquerel discovered that uranium spontaneously emitted energetic radiation. This proved that particles originate from <strong>within the atom itself</strong> &#x2014; shattering Dalton&#x2019;s idea of the atom as an indivisible whole. The following year, J.J. Thomson discovered the electron.</div>
+        <div class="transition-box">&#x1F4A1; If radiation came from inside atoms, atoms must have internal structure. This triggered a search for sub-atomic particles &#x2014; leading directly to Thomson&#x2019;s electron discovery.</div>
+        <div class="toggle-hint">&#x25BC; click to expand</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 5. J.J. Thomson -->
+  <div class="row left">
+    <div class="dot" style="background:#00bcd4;box-shadow:0 0 14px #00bcd4cc;"></div>
+    <div class="card-wrap">
+      <div class="card" style="--col:#00bcd4;--bg:rgba(0,188,212,0.12);--shadow:#00bcd444;" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="year-badge" style="background:linear-gradient(135deg,#00bcd4,#00bcd499);">1897</span>
+          <span class="scientist" style="color:#00bcd4;">J.J. Thomson</span>
+        </div>
+        <div class="model-label">The Plum Pudding Model · Cathode Ray Experiments</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 135 98" width="135" height="98">
+            <circle cx="67" cy="46" r="38" fill="rgba(249,168,37,0.18)" stroke="#f9a825" stroke-width="1.5"/>
+            <text x="38" y="30" font-size="11" fill="#f9a825">+</text>
+            <text x="58" y="22" font-size="11" fill="#f9a825">+</text>
+            <text x="82" y="26" font-size="11" fill="#f9a825">+</text>
+            <text x="95" y="42" font-size="11" fill="#f9a825">+</text>
+            <text x="88" y="60" font-size="11" fill="#f9a825">+</text>
+            <text x="50" y="64" font-size="11" fill="#f9a825">+</text>
+            <text x="68" y="72" font-size="11" fill="#f9a825">+</text>
+            <text x="32" y="50" font-size="11" fill="#f9a825">+</text>
+            <circle cx="53" cy="33" r="7" fill="#00bcd4"/>
+            <text x="53" y="36" text-anchor="middle" font-size="6" fill="white">e&#x207B;</text>
+            <circle cx="82" cy="38" r="7" fill="#00bcd4"/>
+            <text x="82" y="41" text-anchor="middle" font-size="6" fill="white">e&#x207B;</text>
+            <circle cx="61" cy="56" r="7" fill="#00bcd4"/>
+            <text x="61" y="59" text-anchor="middle" font-size="6" fill="white">e&#x207B;</text>
+            <circle cx="84" cy="60" r="7" fill="#00bcd4"/>
+            <text x="84" y="63" text-anchor="middle" font-size="6" fill="white">e&#x207B;</text>
+            <circle cx="46" cy="54" r="6" fill="#00bcd4"/>
+            <text x="46" y="57" text-anchor="middle" font-size="5.5" fill="white">e&#x207B;</text>
+            <text x="67" y="90" text-anchor="middle" font-size="8" fill="#b0e8f0">electrons in positive &#x201C;pudding&#x201D;</text>
+          </svg>
+        </div>
+        <div class="desc">Thomson discovered the <strong>electron</strong> using cathode ray tubes &#x2014; a negatively charged particle ~1840&#xD7; lighter than the atom. He proposed the <strong>Plum Pudding Model</strong>: a diffuse sphere of positive charge with electrons embedded throughout, like plums in a pudding.</div>
+        <div class="transition-box">&#x1F4A1; Rutherford devised the Gold Foil Experiment to test Thomson&#x2019;s model. The results were so unexpected that Rutherford said it was &#x201C;as if you fired a shell at tissue paper and it bounced back&#x201D;.</div>
+        <div class="toggle-hint">&#x25BC; click to expand</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 6. Rutherford -->
+  <div class="row right">
+    <div class="dot" style="background:#e91e63;box-shadow:0 0 14px #e91e63cc;"></div>
+    <div class="card-wrap">
+      <div class="card" style="--col:#e91e63;--bg:rgba(233,30,99,0.12);--shadow:#e91e6344;" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="year-badge" style="background:linear-gradient(135deg,#e91e63,#e91e6399);">1911</span>
+          <span class="scientist" style="color:#e91e63;">Ernest Rutherford</span>
+        </div>
+        <div class="model-label">Gold Foil Experiment &#x2192; The Nuclear Model</div>
+        <div class="svg-wrap">
+          <!-- Gold Foil Experiment -->
+          <svg viewBox="0 0 225 118" width="225" height="118">
+            <defs>
+              <marker id="ao" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5z" fill="#ff9900"/></marker>
+              <marker id="ab" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5z" fill="#ff4444"/></marker>
+            </defs>
+            <rect x="2" y="44" width="22" height="28" rx="4" fill="#666"/>
+            <text x="13" y="62" text-anchor="middle" font-size="7" fill="white">&#x03B1; src</text>
+            <rect x="96" y="8" width="10" height="100" fill="rgba(255,215,0,0.25)" stroke="#ffd700" stroke-width="1"/>
+            <text x="101" y="113" text-anchor="middle" font-size="6" fill="#ffd700">Au foil</text>
+            <circle cx="101" cy="58" r="5" fill="#e91e63"/>
+            <!-- Straight beams -->
+            <line x1="24" y1="52" x2="96" y2="52" stroke="#ff9900" stroke-width="1" opacity="0.5"/>
+            <line x1="106" y1="52" x2="215" y2="52" stroke="#ff9900" stroke-width="1" opacity="0.5" marker-end="url(#ao)"/>
+            <line x1="24" y1="58" x2="96" y2="58" stroke="#ff9900" stroke-width="2"/>
+            <line x1="106" y1="58" x2="215" y2="58" stroke="#ff9900" stroke-width="2" marker-end="url(#ao)"/>
+            <line x1="24" y1="64" x2="96" y2="64" stroke="#ff9900" stroke-width="1" opacity="0.5"/>
+            <line x1="106" y1="64" x2="215" y2="76" stroke="#ff9900" stroke-width="1" opacity="0.5" marker-end="url(#ao)"/>
+            <!-- Back-scattered -->
+            <line x1="24" y1="48" x2="96" y2="48" stroke="#ff4444" stroke-width="2"/>
+            <line x1="96" y1="48" x2="30" y2="12" stroke="#ff4444" stroke-width="2" marker-end="url(#ab)"/>
+            <text x="10" y="10" font-size="7" fill="#ff4444">bounced back!</text>
+            <text x="135" y="50" font-size="6.5" fill="#ff9900">most pass straight</text>
+            <text x="135" y="60" font-size="6.5" fill="#ff9900">through (empty space)</text>
+          </svg>
+          <!-- Nuclear Model -->
+          <svg viewBox="0 0 120 100" width="120" height="100">
+            <circle cx="60" cy="48" r="42" fill="none" stroke="#e91e63" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.4"/>
+            <circle cx="60" cy="48" r="26" fill="none" stroke="#e91e63" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.5"/>
+            <circle cx="60" cy="48" r="8" fill="#e91e63"/>
+            <text x="60" y="52" text-anchor="middle" font-size="7" fill="white">+</text>
+            <circle cx="60" cy="6" r="5" fill="#00bcd4"/><text x="60" y="9" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="60" cy="90" r="5" fill="#00bcd4"/><text x="60" y="93" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="18" cy="48" r="5" fill="#00bcd4"/><text x="18" y="51" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="102" cy="48" r="5" fill="#00bcd4"/><text x="102" y="51" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <text x="60" y="96" text-anchor="middle" font-size="7" fill="#f0b0c0">nuclear model</text>
+          </svg>
+        </div>
+        <div class="desc">Rutherford fired alpha particles at thin gold foil. Most passed straight through, but a small number deflected at large angles &#x2014; some even bounced directly back. This proved the atom contains a tiny, dense, positively-charged <strong>nucleus</strong> at its centre, with electrons orbiting at a great distance (atom is mostly empty space).</div>
+        <div class="transition-box">&#x1F4A1; Problem: classical physics said orbiting electrons should continuously radiate energy and spiral into the nucleus. Bohr solved this by quantising electron energy levels.</div>
+        <div class="toggle-hint">&#x25BC; click to expand</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 7. Niels Bohr -->
+  <div class="row left">
+    <div class="dot" style="background:#2ecc71;box-shadow:0 0 14px #2ecc71cc;"></div>
+    <div class="card-wrap">
+      <div class="card" style="--col:#2ecc71;--bg:rgba(46,204,113,0.12);--shadow:#2ecc7144;" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="year-badge" style="background:linear-gradient(135deg,#2ecc71,#2ecc7199);">1913</span>
+          <span class="scientist" style="color:#2ecc71;">Niels Bohr</span>
+        </div>
+        <div class="model-label">The Bohr Model · Quantised Electron Shells</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 145 130" width="145" height="130">
+            <circle cx="72" cy="65" r="50" fill="none" stroke="#2ecc71" stroke-width="1.5" opacity="0.45"/>
+            <circle cx="72" cy="65" r="36" fill="none" stroke="#2ecc71" stroke-width="1.5" opacity="0.55"/>
+            <circle cx="72" cy="65" r="22" fill="none" stroke="#2ecc71" stroke-width="1.5" opacity="0.7"/>
+            <text x="125" y="65" font-size="7" fill="#2ecc71">n=3</text>
+            <text x="111" y="65" font-size="7" fill="#2ecc71">n=2</text>
+            <text x="97" y="65" font-size="7" fill="#2ecc71">n=1</text>
+            <circle cx="72" cy="65" r="9" fill="#e91e63"/>
+            <text x="72" y="69" text-anchor="middle" font-size="7" fill="white">+</text>
+            <circle cx="72" cy="15" r="5" fill="#00bcd4"/><text x="72" y="18" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="72" cy="115" r="5" fill="#00bcd4"/><text x="72" y="118" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="22" cy="65" r="5" fill="#00bcd4"/><text x="22" y="68" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="108" cy="65" r="5" fill="#00bcd4"/><text x="108" y="68" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="44" cy="36" r="5" fill="#00bcd4"/><text x="44" y="39" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <!-- Photon arrow -->
+            <line x1="108" y1="65" x2="130" y2="40" stroke="#ffeb3b" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <text x="133" y="36" font-size="8" fill="#ffeb3b">h&#x03BD;</text>
+            <text x="72" y="126" text-anchor="middle" font-size="7.5" fill="#b0e8c8">fixed shells n=1,2,3... (2n&#xB2; electrons)</text>
+          </svg>
+        </div>
+        <div class="desc">Bohr proposed electrons orbit the nucleus in <strong>fixed energy levels (shells)</strong> numbered n=1, 2, 3&#x2026; Electrons can only jump between shells by absorbing or emitting a photon of specific energy (h&#x03BD;). This explained atomic emission spectra. Shells hold 2, 8, 18&#x2026; electrons (formula: 2n&#xB2;). This was the beginning of <strong>quantum theory</strong>.</div>
+        <div class="transition-box">&#x1F4A1; The Bohr model couldn&#x2019;t explain multi-electron atoms or fine spectral lines. Schr&#xF6;dinger&#x2019;s quantum mechanics (1926) replaced fixed orbits with probability clouds. Chadwick&#x2019;s neutron discovery (1932) also completed the nuclear picture.</div>
+        <div class="toggle-hint">&#x25BC; click to expand</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 8. James Chadwick -->
+  <div class="row right">
+    <div class="dot" style="background:#ff9800;box-shadow:0 0 14px #ff9800cc;"></div>
+    <div class="card-wrap">
+      <div class="card" style="--col:#ff9800;--bg:rgba(255,152,0,0.12);--shadow:#ff980044;" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="year-badge" style="background:linear-gradient(135deg,#ff9800,#ff980099);">1932</span>
+          <span class="scientist" style="color:#ff9800;">James Chadwick</span>
+        </div>
+        <div class="model-label">Discovery of the Neutron · The Complete Nuclear Atom</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 155 118" width="155" height="118">
+            <circle cx="77" cy="56" r="48" fill="none" stroke="#00bcd4" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+            <circle cx="77" cy="56" r="32" fill="none" stroke="#00bcd4" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+            <circle cx="77" cy="56" r="16" fill="rgba(233,30,99,0.15)" stroke="#e91e63" stroke-width="1.5"/>
+            <!-- Protons -->
+            <circle cx="71" cy="51" r="6" fill="#e91e63"/>
+            <text x="71" y="54" text-anchor="middle" font-size="5.5" fill="white">p&#x207A;</text>
+            <circle cx="82" cy="58" r="6" fill="#e91e63"/>
+            <text x="82" y="61" text-anchor="middle" font-size="5.5" fill="white">p&#x207A;</text>
+            <!-- Neutrons -->
+            <circle cx="71" cy="62" r="6" fill="#ff9800"/>
+            <text x="71" y="65" text-anchor="middle" font-size="5.5" fill="white">n&#x2070;</text>
+            <circle cx="82" cy="49" r="6" fill="#ff9800"/>
+            <text x="82" y="52" text-anchor="middle" font-size="5.5" fill="white">n&#x2070;</text>
+            <!-- Electrons -->
+            <circle cx="77" cy="24" r="5" fill="#2ecc71"/><text x="77" y="27" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="77" cy="88" r="5" fill="#2ecc71"/><text x="77" y="91" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="29" cy="56" r="5" fill="#2ecc71"/><text x="29" y="59" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <circle cx="125" cy="56" r="5" fill="#2ecc71"/><text x="125" y="59" text-anchor="middle" font-size="5" fill="white">e&#x207B;</text>
+            <!-- Legend -->
+            <circle cx="12" cy="98" r="6" fill="#e91e63"/>
+            <text x="22" y="102" font-size="7" fill="#e0b0b0">proton (+1)</text>
+            <circle cx="12" cy="112" r="6" fill="#ff9800"/>
+            <text x="22" y="116" font-size="7" fill="#e0c890">neutron (0)</text>
+            <circle cx="88" cy="98" r="5" fill="#2ecc71"/>
+            <text x="97" y="102" font-size="7" fill="#b0e8b0">electron (&#x2212;1)</text>
+          </svg>
+        </div>
+        <div class="desc">Chadwick bombarded beryllium with alpha particles and detected a new <strong>neutral particle</strong> &#x2014; the <strong>neutron</strong> &#x2014; with mass similar to the proton. This completed the modern nuclear model: a nucleus containing <strong>protons (+1)</strong> and <strong>neutrons (0)</strong>, surrounded by <strong>electrons (&#x2212;1)</strong> in shells. Protons and neutrons together are called <strong>nucleons</strong>.</div>
+        <div class="transition-box">&#x1F4A1; With the neutron discovered, Schr&#xF6;dinger&#x2019;s quantum mechanical model added mathematical precision &#x2014; describing electrons not as particles in fixed orbits but as probability clouds in s, p, d, f sub-shells.</div>
+        <div class="toggle-hint">&#x25BC; click to expand</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 9. Schrödinger -->
+  <div class="row left">
+    <div class="dot" style="background:#aa00ff;box-shadow:0 0 14px #aa00ffcc;"></div>
+    <div class="card-wrap">
+      <div class="card" style="--col:#aa00ff;--bg:rgba(170,0,255,0.12);--shadow:#aa00ff44;" onclick="toggle(this)">
+        <div class="card-header">
+          <span class="year-badge" style="background:linear-gradient(135deg,#aa00ff,#aa00ff99);">1926 &#x2013; Today</span>
+          <span class="scientist" style="color:#aa00ff;">Schr&#xF6;dinger &amp; Quantum Model</span>
+        </div>
+        <div class="model-label">s, p, d, f Orbitals &#x2014; Probability Clouds</div>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 215 105" width="215" height="105">
+            <!-- s orbital -->
+            <ellipse cx="28" cy="50" rx="22" ry="22" fill="rgba(170,0,255,0.2)" stroke="#aa00ff" stroke-width="1.5"/>
+            <text x="28" y="55" text-anchor="middle" font-size="11" fill="#cc66ff">s</text>
+            <text x="28" y="82" text-anchor="middle" font-size="7" fill="#aaa">spherical</text>
+            <!-- p orbital -->
+            <ellipse cx="78" cy="33" rx="12" ry="20" fill="rgba(0,180,255,0.2)" stroke="#00b4ff" stroke-width="1.5"/>
+            <ellipse cx="78" cy="67" rx="12" ry="20" fill="rgba(0,180,255,0.2)" stroke="#00b4ff" stroke-width="1.5"/>
+            <text x="78" y="54" text-anchor="middle" font-size="11" fill="#00b4ff">p</text>
+            <text x="78" y="82" text-anchor="middle" font-size="7" fill="#aaa">dumbbell</text>
+            <!-- d orbital -->
+            <ellipse cx="138" cy="37" rx="20" ry="9" fill="rgba(0,200,100,0.2)" stroke="#00c864" stroke-width="1.5" transform="rotate(45 138 37)"/>
+            <ellipse cx="138" cy="37" rx="20" ry="9" fill="rgba(0,200,100,0.2)" stroke="#00c864" stroke-width="1.5" transform="rotate(-45 138 37)"/>
+            <ellipse cx="138" cy="63" rx="20" ry="9" fill="rgba(0,200,100,0.2)" stroke="#00c864" stroke-width="1.5" transform="rotate(45 138 63)"/>
+            <ellipse cx="138" cy="63" rx="20" ry="9" fill="rgba(0,200,100,0.2)" stroke="#00c864" stroke-width="1.5" transform="rotate(-45 138 63)"/>
+            <text x="138" y="54" text-anchor="middle" font-size="11" fill="#00c864">d</text>
+            <text x="138" y="82" text-anchor="middle" font-size="7" fill="#aaa">4-lobed</text>
+            <!-- f -->
+            <text x="190" y="58" text-anchor="middle" font-size="30" fill="rgba(255,200,0,0.35)">f</text>
+            <text x="190" y="82" text-anchor="middle" font-size="7" fill="#aaa">complex</text>
+            <text x="107" y="98" text-anchor="middle" font-size="7.5" fill="#c8c8e0">probability clouds &#x2014; not defined orbits</text>
+          </svg>
+        </div>
+        <div class="desc">Schr&#xF6;dinger&#x2019;s equation describes electrons as <strong>probability clouds</strong> (atomic orbitals) rather than particles in defined orbits. Electrons occupy sub-shells: <strong>s</strong> (spherical, max 2e&#x207B;), <strong>p</strong> (dumbbell, max 6e&#x207B;), <strong>d</strong> (4-lobed, max 10e&#x207B;), <strong>f</strong> (max 14e&#x207B;). Three rules: (1) lowest energy fills first; (2) orbitals of equal energy fill singly before pairing (Hund&#x2019;s rule); (3) max 2 electrons per orbital (Pauli exclusion). This is the model used throughout A-Level Chemistry.</div>
+        <div class="transition-box">&#x2705; This quantum model explains ionisation energies, periodic trends, chemical bonding, and molecular geometry &#x2014; the complete foundation of modern chemistry.</div>
+        <div class="toggle-hint">&#x25BC; click to expand</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+
+</div><!-- end timeline -->
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot" style="background:#e91e63;"></span>Proton p&#x207A; (+1, relative mass 1)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#ff9800;"></span>Neutron n&#x2070; (0, relative mass 1)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#00bcd4;"></span>Electron e&#x207B; (&#x2212;1, relative mass 1/1840)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#ffd700;"></span>Key transition between models</div>
+</div>
+
+<p style="text-align:center;margin-top:24px;font-size:0.72em;color:#444;">OxfordAQA International A-Level Chemistry · Specification 3.1.1 · Atomic Structure</p>
+
+<script>
+  function toggle(card) {
+    const isOpen = card.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.card').forEach(c => {
+      c.classList.remove('open');
+      c.querySelector('.toggle-hint').textContent = '▼ click to expand';
+    });
+    // Open clicked (unless it was already open)
+    if (!isOpen) {
+      card.classList.add('open');
+      card.querySelector('.toggle-hint').textContent = '▲ click to collapse';
+    }
+  }
+</script>
+</body>
+</html>
